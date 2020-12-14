@@ -3,6 +3,7 @@ package uni;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+import Exceptions.AlreadyExistsException;
 import Exceptions.MatrikelException;
 import Exceptions.PersonalNummerException;
 import Exceptions.VerweisException;
@@ -52,21 +53,14 @@ public class Hochschule {
             System.out.println(student);
         }
     }
-    public void addStudent(String vorname, String nachname, int matrikelnummer, LocalDate einstiegsdatum) {
+    public void addStudent(String vorname, String nachname, int matrikelnummer, LocalDate einstiegsdatum) throws MatrikelException {
 
         if(this.matrikelnummern.contains(matrikelnummer)){
-            try {
                 throw new MatrikelException("Matrikelnummer schon im System vorhanden!");
-            } catch (MatrikelException e) {
-                e.printStackTrace();
-            }
         }
         else if(String.valueOf(matrikelnummer).length() != 8){
-            try {
                 throw new MatrikelException("Matrikelnummer muss eine 8 stellige Nummer sein! ");
-            } catch (MatrikelException e){
-                e.printStackTrace();
-            }
+
         }
         else{
             Student student = new Student(vorname, nachname, matrikelnummer, einstiegsdatum);
@@ -89,28 +83,19 @@ public class Hochschule {
             System.out.println(tutor);
         }
     }
-    public void addTutor(String vorname, String nachname, int personalNummer, LocalDate einstiegsdatum, Student student){
+    public void addTutor(String vorname, String nachname, int personalNummer, LocalDate einstiegsdatum, Student student) throws VerweisException, PersonalNummerException {
         if(String.valueOf(personalNummer).length() != 6){
-            try {
-                throw new PersonalNummerException("Die Zahl muss 6 Ziffern lang sein!");
-            }catch (PersonalNummerException e){
-                e.printStackTrace();
-            }
+
+            throw new PersonalNummerException("Die Zahl muss 6 Ziffern lang sein!");
+
         }
         String newPersonalNummer = nachname.substring(0,1) + personalNummer + "T" ;
         if(this.personalnummern.contains(newPersonalNummer)){
-            try {
-                throw new PersonalNummerException("Diese Personalnummer existiert bereits im System!");
-            }catch (PersonalNummerException e){
-                e.printStackTrace();
-            }
+
+            throw new PersonalNummerException("Diese Personalnummer existiert bereits im System!");
         }
         if(student == null){
-            try{
                 throw new VerweisException("Tutor muss Studentverweis enthalten!");
-            } catch (VerweisException e){
-                e.printStackTrace();
-            }
         } else{
             Tutor tutor = new Tutor(vorname,nachname,newPersonalNummer,einstiegsdatum,student);
             this.personalnummern.add(newPersonalNummer);
@@ -153,23 +138,18 @@ public class Hochschule {
 
     }
     //Mitarbeiter Funktionen
-    public void addMitarbeiter(String vorname, String nachname, int personalNummer,LocalDate einstiegDatum){
+    public void addMitarbeiter(String vorname, String nachname, int personalNummer,LocalDate einstiegDatum) throws PersonalNummerException {
         if(String.valueOf(personalNummer).length() != 6){
-            try {
                 throw new PersonalNummerException("Die Zahl muss 6 Ziffern lang sein!");
-            }catch (PersonalNummerException e){
-                e.printStackTrace();
-            }
+
         }
 
         String newPersonalNummer = nachname.substring(0,1) + personalNummer + "M" ;
 
         if(this.personalnummern.contains(newPersonalNummer)){
-            try {
+
                 throw new PersonalNummerException("Diese Personalnummer existiert bereits im System!");
-            }catch (PersonalNummerException e){
-                e.printStackTrace();
-            }
+
         }
         this.personalnummern.add(newPersonalNummer);
         Mitarbeiter mitarbeiter = new Mitarbeiter(vorname,nachname,newPersonalNummer,einstiegDatum);
@@ -188,13 +168,13 @@ public class Hochschule {
             System.out.println(kurs);
         }
     }
-    public void addKurs(String bezeichnung, int semester, ArrayList<Kurs> vorleistungen){
+    public void addKurs(String bezeichnung, int semester, ArrayList<Kurs> vorleistungen) throws AlreadyExistsException {
 
         Kurs kurs = new Kurs(bezeichnung,semester,vorleistungen);
         for(Kurs k: this.kurse){
             if(kurs.equals(k)){
-                System.out.println("Kurs ist bereits im System");
-                return;
+                throw new AlreadyExistsException("Kurs ist bereits im System");
+
             }
         }
         this.kurse.add(kurs);
@@ -206,53 +186,28 @@ public class Hochschule {
             System.out.println(veranstaltung);
         }
     }
-    public void addVeranstaltung(Kurs kurs, LocalDate beginndaten, LocalDate enddaten, int sws){
+    public void addVeranstaltung(Kurs kurs, LocalDate beginndaten, LocalDate enddaten, int sws) throws AlreadyExistsException {
         Veranstaltung veranstaltung = new Veranstaltung(kurs,beginndaten,enddaten, sws);
         if(this.veranstaltungen.contains(veranstaltung)){
-            System.out.println("Veranstaltung ist bereits im System");
+            throw new AlreadyExistsException("Veranstaltung ist bereits im System");
         } else{
             this.veranstaltungen.add(veranstaltung);
         }
 
     }
 
-
-
-
-
-
-
-
     public ArrayList<Dozent> getDozenten() {
         return dozenten;
     }
 
-    public void setDozenten(ArrayList<Dozent> dozenten) {
-        this.dozenten = dozenten;
-    }
 
     public ArrayList<Tutor> getTutoren() {
         return tutoren;
     }
 
-    public void setTutoren(ArrayList<Tutor> tutoren) {
-        this.tutoren = tutoren;
-    }
-
-
-
-    public void setStudenten(ArrayList<Student> studenten) {
-        this.studenten = studenten;
-    }
-
     public ArrayList<Kurs> getKurse() {
         return kurse;
     }
-
-    public void setKurse(ArrayList<Kurs> kurse) {
-        this.kurse = kurse;
-    }
-
     public ArrayList<Mitarbeiter> getMitarbeiter(){
         return mitarbeiter;
     }
@@ -261,7 +216,4 @@ public class Hochschule {
         return veranstaltungen;
     }
 
-    public void setVeranstaltungen(ArrayList<Veranstaltung> veranstaltungen) {
-        this.veranstaltungen = veranstaltungen;
-    }
 }

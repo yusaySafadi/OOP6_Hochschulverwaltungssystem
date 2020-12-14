@@ -1,4 +1,4 @@
-import Exceptions.MatrikelException;
+import Exceptions.*;
 
 import roles.Dozent;
 import roles.Mitarbeiter;
@@ -12,10 +12,9 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.Vector;
 
 public class Main {
-    public static void main(String[] args){
+    public static void main(String[] args) throws AlreadyExistsException, PersonalNummerException, MatrikelException, VerweisException, EmptyException {
 
         Scanner sc = new Scanner(System.in);
         Hochschule bielefeld = new Hochschule();
@@ -80,6 +79,8 @@ public class Main {
                 case "5":
                     veranstaltungenManagement(sc,bielefeld);
                     break;
+                case "6":
+                    return;
             }
         }
     }
@@ -92,10 +93,11 @@ public class Main {
         System.out.println("3 Tutoren verwarlten");
         System.out.println("4 Kurse verwalten");
         System.out.println("5 Veranstaltungen verwalten");
+        System.out.println("6 Programm beenden");
 
     }
 
-    public static void studentenManagement(Scanner sc, Hochschule uni){
+    public static void studentenManagement(Scanner sc, Hochschule uni) throws MatrikelException, EmptyException {
         System.out.println("0 Alle Studenten anzeigen");
         System.out.println("1 Student hinzufügen");
         System.out.println("2 einzelner Student verwalten");
@@ -129,8 +131,7 @@ public class Main {
                 break;
             case "2":
                 if(uni.getStudenten().size() == 0){
-                    System.out.println("Diese Hochschule hat noch keine Studenten eingetragen");
-                    return;
+                    throw new EmptyException("Diese Hochschule hat noch keine Studenten eingetragen");
                 }
                 Student selectedStudent = selectStudent(sc, uni);
 
@@ -189,7 +190,7 @@ public class Main {
         }
     }
 
-    public static Student selectStudent(Scanner sc,Hochschule uni){
+    public static Student selectStudent(Scanner sc,Hochschule uni) throws EmptyException {
         System.out.println("Um welchen Student handelt es sich?");
         ArrayList<Student> studenten = uni.getStudenten();
         int count = 0;
@@ -198,10 +199,13 @@ public class Main {
             count++;
         }
         int studentIndex = Integer.parseInt(sc.nextLine());
+        if(studentIndex > studenten.size()-1){
+            throw new EmptyException("Student existiert nicht");
+        }
         return studenten.get(studentIndex);
     }
 
-    public static void dozentenManagement(Scanner sc, Hochschule uni){
+    public static void dozentenManagement(Scanner sc, Hochschule uni) throws AlreadyExistsException, EmptyException {
         System.out.println("0 Alle Dozente anzeigen");
         System.out.println("1 Dozent hinzufügen");
         System.out.println("2 Dozent Verwalten");
@@ -239,6 +243,7 @@ public class Main {
 
                 if(antwort.equals("ja")){
                     Mitarbeiter mitarbeiter = selectMitarbeiter(sc,uni);
+                    uni.addDozent(vorname,nachname,personalnummer,einstiegsdatum,mitarbeiter);
                 } else if(antwort.equals("nein")){
                     uni.addDozent(vorname, nachname, personalnummer, einstiegsdatum, null);
                 } else{
@@ -248,8 +253,8 @@ public class Main {
                 break;
             case "2":
                 if(uni.getDozenten().size() == 0){
-                    System.out.println("Diese Hochschule hat noch keine Dozenten eingetragen");
-                    return;
+                    throw new EmptyException("Diese Hochschule hat noch keine Dozenten eingetragen");
+
                 }
                 Dozent selectedDozent = selectDozent(sc,uni);
 
@@ -265,8 +270,8 @@ public class Main {
 
                     case "0":
                         if(uni.getVeranstaltungen().size() == 0){
-                            System.out.println("Diese Hochschule hat noch keine Veranstalung eingetragen");
-                            return;
+                            throw new EmptyException("Diese Hochschule hat noch keine Veranstalung eingetragen");
+
                         }
                         Veranstaltung veranstaltung = selectVeranstalung(sc, uni);
                         selectedDozent.addVeranstaltung(veranstaltung);
@@ -274,8 +279,7 @@ public class Main {
 
                     case "1":
                         if(uni.getVeranstaltungen().size() == 0){
-                            System.out.println("Diese Hochschule hat noch keine Veranstalung eingetragen");
-                            return;
+                            throw new EmptyException("Diese Hochschule hat noch keine Veranstalung eingetragen");
                         }
                         for(Veranstaltung v: selectedDozent.getVeranstaltungen()){
                             System.out.println(v);
@@ -284,8 +288,7 @@ public class Main {
 
                     case "2":
                         if(uni.getKurse().size() == 0){
-                            System.out.println("Diese Hochschule hat noch keine Kurse eingetragen");
-                            return;
+                            throw new EmptyException("Diese Hochschule hat noch keine Kurse eingetragen");
                         }
                         Kurs kurs = selectKurs(sc, uni);
                         selectedDozent.addKurs(kurs);
@@ -293,8 +296,8 @@ public class Main {
 
                     case "3":
                         if(uni.getKurse().size() == 0){
-                            System.out.println("Diese Hochschule hat noch keine Kurse eingetragen");
-                            return;
+                            throw new EmptyException("Diese Hochschule hat noch keine Kurse eingetragen");
+
                         }
                         for(Kurs k : selectedDozent.getKurse()){
                             System.out.println(k);
@@ -309,7 +312,7 @@ public class Main {
         }
     }
 
-    public static Dozent selectDozent(Scanner sc, Hochschule uni){
+    public static Dozent selectDozent(Scanner sc, Hochschule uni) throws EmptyException {
         System.out.println("Um welchen Dozent handelt es sich?");
         ArrayList<Dozent> dozenten = uni.getDozenten();
         int count = 0;
@@ -318,10 +321,13 @@ public class Main {
             count++;
         }
         int index = Integer.parseInt(sc.nextLine());
+        if(index > dozenten.size()-1){
+            throw new EmptyException("Dozent existiert nicht");
+        }
         return dozenten.get(index);
     }
 
-    public static Tutor selectTutor(Scanner sc, Hochschule uni){
+    public static Tutor selectTutor(Scanner sc, Hochschule uni) throws EmptyException {
         System.out.println("Um welchen Tutor handelt es sich?");
         ArrayList<Tutor> tutoren = uni.getTutoren();
         int count = 0;
@@ -330,9 +336,12 @@ public class Main {
             count++;
         }
         int index = Integer.parseInt(sc.nextLine());
+        if(index > tutoren.size()-1){
+            throw new EmptyException("Tutor existiert nicht");
+        }
         return tutoren.get(index);
     }
-    public static Mitarbeiter selectMitarbeiter(Scanner sc, Hochschule uni) {
+    public static Mitarbeiter selectMitarbeiter(Scanner sc, Hochschule uni) throws EmptyException {
         System.out.println("Um welchen Mitarbeiter handelt es sich?");
         ArrayList<Mitarbeiter> mitarbeiters = uni.getMitarbeiter();
         int count = 0;
@@ -341,10 +350,13 @@ public class Main {
             count++;
         }
         int mitarbeiterIndex = Integer.parseInt(sc.nextLine());
+        if(mitarbeiterIndex> mitarbeiters.size()-1){
+            throw new EmptyException("Mitarbeiter existiert nicht");
+        }
         return mitarbeiters.get(mitarbeiterIndex);
     }
 
-    public static void mitarbeiterManagement(Scanner sc, Hochschule uni){
+    public static void mitarbeiterManagement(Scanner sc, Hochschule uni) throws PersonalNummerException, EmptyException {
         System.out.println("0 Alle Mitarbeiter anzeigen");
         System.out.println("1 Mitarbeiter hinzufügen");
         System.out.println("2 einzelner Mitarbeiter Verwalten");
@@ -404,7 +416,7 @@ public class Main {
         }
 
     }
-    public static void tutorenManagement(Scanner sc, Hochschule uni){
+    public static void tutorenManagement(Scanner sc, Hochschule uni) throws PersonalNummerException, VerweisException, EmptyException {
         System.out.println("0 Alle Tutoren anzeigen");
         System.out.println("1 Tutor hinzufügen");
         System.out.println("2 Tutor Verwalten");
@@ -482,7 +494,8 @@ public class Main {
     }
 
 
-    public static void kurseManagement(Scanner sc, Hochschule uni){
+    public static void kurseManagement(Scanner sc, Hochschule uni) throws AlreadyExistsException, EmptyException {
+
         System.out.println("0 Alle Kurse anzeigen");
         System.out.println("1 Kurs hinzufügen");
 
@@ -519,7 +532,7 @@ public class Main {
                             }
 
 
-                    }
+                        }
                         leistungen.add(kurs);
 
                     }
@@ -530,15 +543,61 @@ public class Main {
                 break;
 
         }
+    }
+
+    public static void veranstaltungenManagement(Scanner sc, Hochschule uni) throws AlreadyExistsException, EmptyException {
+        System.out.println("0 Alle Veranstaltungen anzeigen");
+        System.out.println("1 Veranstaltung hinzufügen");
+
+        String input = sc.nextLine();
+        switch (input){
+            case "0":
+                if(uni.getVeranstaltungen().size() == 0){
+                    System.out.println("Diese Hochschule hat noch keine Veranstaltung eingetragen");
+                    return;
+                }
+                uni.printAllVeranstaltungen();
+                break;
+            case "1":
+                Kurs kurs = selectKurs(sc, uni);
+
+                System.out.println("Beginndaten:");
+
+                System.out.println("Jahr:");
+                int jahr = Integer.parseInt(sc.nextLine());
+
+                System.out.println("Monat(1-12):");
+                Month monat = Month.of(Integer.parseInt(sc.nextLine())) ;
+
+                System.out.println("Tag:");
+                int tag = Integer.parseInt(sc.nextLine());
+                LocalDate beginndaten = LocalDate.of(jahr,monat,tag);
+
+                System.out.println("Enddaten");
+                System.out.println("Jahr:");
+                jahr = Integer.parseInt(sc.nextLine());
+
+                System.out.println("Monat(1-12):");
+                monat = Month.of(Integer.parseInt(sc.nextLine())) ;
+
+                System.out.println("Tag:");
+                tag = Integer.parseInt(sc.nextLine());
+                LocalDate enddaten= LocalDate.of(jahr,monat,tag);
+
+                System.out.println("SWS:");
+                int sws = Integer.parseInt(sc.nextLine().trim());
+
+                uni.addVeranstaltung(kurs, beginndaten, enddaten, sws);
+
+                break;
+
+        }
+
 
     }
 
-    public static void veranstaltungenManagement(Scanner sc, Hochschule uni){
 
-    }
-
-
-    public static Kurs selectKurs(Scanner sc,Hochschule uni){
+    public static Kurs selectKurs(Scanner sc,Hochschule uni) throws EmptyException {
         System.out.println("Um welchen Kurs handelt es sich?");
         ArrayList<Kurs> kurse = uni.getKurse();
         int count = 0;
@@ -551,13 +610,16 @@ public class Main {
             return null;
         } else{
             int kursIndex = Integer.parseInt(input);
+            if(kursIndex> kurse.size()-1){
+                throw new EmptyException("Kurs existiert nicht");
+            }
             return kurse.get(kursIndex);
         }
 
         }
 
 
-    public static Veranstaltung selectVeranstalung(Scanner sc, Hochschule uni){
+    public static Veranstaltung selectVeranstalung(Scanner sc, Hochschule uni) throws EmptyException {
         System.out.println("Um welche Veranstaltung handelt es sich?");
         ArrayList<Veranstaltung> veranstaltungen = uni.getVeranstaltungen();
 
@@ -567,6 +629,9 @@ public class Main {
             count++;
         }
         int veranstaltungIndex = Integer.parseInt(sc.nextLine());
+        if(veranstaltungIndex> veranstaltungen.size()-1){
+            throw new EmptyException("Veranstaltung existiert nicht");
+        }
         return veranstaltungen.get(veranstaltungIndex);
 
 

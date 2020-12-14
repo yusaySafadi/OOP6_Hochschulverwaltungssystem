@@ -44,10 +44,10 @@ public class Veranstaltung {
     @Override
     public String toString() {
         return "Veranstaltung{" +
-                "kurs=" + kurs.bezeichnung +
-                ", beginndaten=" + beginndaten +
-                ", enddaten=" + enddaten +
-                ", SWS=" + SWS +
-                '}';
+                "kurs: " + kurs.bezeichnung +
+                ", von " + beginndaten +
+                ", bis " + enddaten +
+                ", " + SWS +
+                " SWS }";
     }
 }

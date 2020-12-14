@@ -1,5 +1,6 @@
 package roles;
 
+import Exceptions.AlreadyExistsException;
 import uni.Kurs;
 import uni.Veranstaltung;
 
@@ -10,8 +11,8 @@ import java.util.Objects;
 public final class Dozent extends Angestellter {
     private Mitarbeiter mitarbeiterVerweis;
 
-    private ArrayList<Kurs> kurse;
-    private ArrayList<Veranstaltung> veranstaltungen;
+    private final ArrayList<Kurs> kurse;
+    private final ArrayList<Veranstaltung> veranstaltungen;
 
     public Dozent(String vorname, String nachname, String personalNummer, LocalDate einstiegsDatum) {
         super(vorname, nachname, personalNummer, einstiegsDatum);
@@ -31,7 +32,7 @@ public final class Dozent extends Angestellter {
         }
         this.kurse.add(kurs);
     }
-    public void addVeranstaltung(Veranstaltung veranstaltung){
+    public void addVeranstaltung(Veranstaltung veranstaltung) throws AlreadyExistsException {
         Kurs veranstaltungsKurs = veranstaltung.getKurs();
         for(Kurs kurs: this.kurse){
             if(kurs == veranstaltungsKurs){
@@ -40,7 +41,7 @@ public final class Dozent extends Angestellter {
             }
         }
 
-        System.out.println("Diese Veranstaltung befindet sich in keinem der Kurse dieses Dozentes");
+      throw new AlreadyExistsException("Diese Veranstaltung befindet sich in keinem der Kurse dieses Dozentes");
 
     }
 
@@ -71,9 +72,9 @@ public final class Dozent extends Angestellter {
     @Override
     public String toString() {
         return "Dozent{" +
-                "Vorname="+ this.getVorname() +
-                ", Nachname=" + this.getNachname() +
-                "Personalnummer=" +this.getPersonalNummer()+
+                " "+ this.getVorname() +
+                ", " + this.getNachname() +
+                " Personalnummer=" +this.getPersonalNummer()+
                 ", mitarbeiterVerweis=" + mitarbeiterVerweis +
                 ", kurse=" + kurse +
                 ", veranstaltungen=" + veranstaltungen +

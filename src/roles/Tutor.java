@@ -10,7 +10,7 @@ import java.util.Objects;
 public class Tutor extends Angestellter{
     final Student studentVerweis;
     private int SWS;
-    private ArrayList<Veranstaltung> veranstaltungen;
+    private final ArrayList<Veranstaltung> veranstaltungen;
 
     public Tutor(String vorname, String nachname, String personalNummer, LocalDate einstiegsDatum, Student studentVerweis) {
         super(vorname, nachname, personalNummer, einstiegsDatum);
