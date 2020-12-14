@@ -1,5 +1,6 @@
 package roles;
 
+import Exceptions.AlreadyExistsException;
 import uni.Kurs;
 import uni.Veranstaltung;
 
@@ -38,13 +39,22 @@ public class Student {
                 nachname.equals(student.nachname);
     }
 
-    public void addAbgeschlosseneKurse(Kurs kurs){
+    public void addAbgeschlosseneKurse(Kurs kurs) throws AlreadyExistsException {
+        if(this.abgeschlosseneKurse.contains(kurs)){
+            throw new AlreadyExistsException("Student hat diesen Kurs bereits abgeschlossen");
+        }
         this.abgeschlosseneKurse.add(kurs);
     }
-    public void addVeranstaltungen(Veranstaltung veranstaltung){
+    public void addVeranstaltungen(Veranstaltung veranstaltung) throws AlreadyExistsException {
+        if(this.veranstaltungen.contains(veranstaltung)){
+            throw new AlreadyExistsException("Student ist schon in diese Veranstaltung");
+        }
         this.veranstaltungen.add(veranstaltung);
     }
-    public void addEingetragenKurse(Kurs kurs){
+    public void addEingetragenKurse(Kurs kurs) throws AlreadyExistsException {
+        if(this.eingetrageneKurse.contains(kurs)){
+            throw new AlreadyExistsException("Student ist in diesem Kurs bereits eingetragen");
+        }
         this.eingetrageneKurse.add(kurs);
     }
     public void removeEingetrageneKurse(Kurs kurs){

@@ -26,13 +26,13 @@ public final class Dozent extends Angestellter {
         this.veranstaltungen = new ArrayList<>();
     }
 
-    public void addKurs(Kurs kurs){
+    public void addKurs(Kurs kurs) throws AlreadyExistsException {
         if(this.kurse.contains(kurs)){
-            System.out.println("Dieser Dozent ist bereits in diesem Kurs eingetragen!");
+            throw new AlreadyExistsException("Dieser Dozent ist bereits in diesem Kurs eingetragen!");
         }
         this.kurse.add(kurs);
     }
-    public void addVeranstaltung(Veranstaltung veranstaltung) throws AlreadyExistsException {
+    public final void addVeranstaltung(Veranstaltung veranstaltung) throws AlreadyExistsException {
         Kurs veranstaltungsKurs = veranstaltung.getKurs();
         for(Kurs kurs: this.kurse){
             if(kurs == veranstaltungsKurs){
